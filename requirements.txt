@@ -1,8 +1,9 @@
 Flask
-opencv-python
+opencv-python-headless
 numpy
 tensorflow ==2.12.0
 Werkzeug
 gunicorn
 cuda-python
 streamlit
+streamlit-webrtc
