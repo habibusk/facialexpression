@@ -80,6 +80,11 @@
 #             processed_image, pred_emotion = result
 #             st.image(processed_image, caption=f"Predicted Emotion: {pred_emotion}", use_column_width=True)
 
+# elif upload_option == "Webcam":
+#     st.sidebar.write("Webcam Capture")
+#     webrtc_streamer(key="example", video_transformer_factory=EmotionDetector)
+# else:
+#     st.write("Please select an option to start.")
 
 
 import cv2
@@ -115,7 +120,7 @@ def Emotion_Analysis(image):
         return image, None
 
     for (x, y, w, h) in faces:
-        roi = gray_frame[y:y + h, x:x + w]
+        roi = gray_frame[y:y + h, x + w]
         roi = cv2.resize(roi, (48, 48))
         roi = roi.astype("float") / 255.0
         roi = tf.expand_dims(roi, axis=-1)  # Adding channel dimension
@@ -135,9 +140,23 @@ def Emotion_Analysis(image):
 
     return image, pred_emotion
 
+def resize_frame(frame, width=None, height=None):
+    """Resize the frame to the given width and height while maintaining aspect ratio."""
+    (h, w) = frame.shape[:2]
+    if width is None and height is None:
+        return frame
+    if width is None:
+        ratio = height / float(h)
+        dim = (int(w * ratio), height)
+    else:
+        ratio = width / float(w)
+        dim = (width, int(h * ratio))
+    return cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+
 class EmotionDetector(VideoTransformerBase):
     def transform(self, frame):
         image = frame.to_ndarray(format="bgr24")
+        image = resize_frame(image, width=320)  # Resize frame to width 320 pixels
         result_image, _ = Emotion_Analysis(image)
         return result_image
 
@@ -171,8 +190,3 @@ else:
 
 st.write("Make sure your browser supports WebRTC and is using HTTPS connection.")
 
-# elif upload_option == "Webcam":
-#     st.sidebar.write("Webcam Capture")
-#     webrtc_streamer(key="example", video_transformer_factory=EmotionDetector)
-# else:
-#     st.write("Please select an option to start.")
