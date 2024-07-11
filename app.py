@@ -156,7 +156,7 @@ def resize_frame(frame, width=None, height=None):
 class EmotionDetector(VideoTransformerBase):
     def transform(self, frame):
         image = frame.to_ndarray(format="bgr24")
-        image = resize_frame(image, width=320)  # Resize frame to width 320 pixels
+        image = resize_frame(image, width=160)  # Resize frame to width 320 pixels
         result_image, _ = Emotion_Analysis(image)
         return result_image
 
